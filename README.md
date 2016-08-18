@@ -11,7 +11,7 @@ A small app that echoes back a nice JSON with some info from the incoming reques
 
 Is is usefull to trace/debug problems while developing REST APIs and SOAP WebServices.  
 
-Features:
+# Features:
 1. Spring Boot 1.3.7, supporting fully executable JARs for Linux based operating systems, including “service” support
 2. Accepts HTTP methods:  GET, POST, PUT, DELETE and OPTIONS
 3. Accepts all content type (*/*)
@@ -52,7 +52,7 @@ From the command line with Mac:
     $ echo 'Do yourself a favor and get LinuxMint!'
 
 Try it using your browser, REST client, SoapUI, with it:
-http://localhost:8080/sample.asp?
+http://localhost:8080/sample.asp?product=42&category=dummy
 http://localhost:8080/sample.php?name=john
 http://localhost:8080/sample.html
 http://localhost:8080/sample.json
