@@ -20,7 +20,7 @@ Features:
 6. GZip compression is disabled (on purpose) to avoid unexpected client behavior
 7. Response content type is always "application/json;charset=UTF-8".
 8. Only 1 class, about 50 lines of code!!! 
-9. Small. Final JAR includes everything (it self-contained) and it is only 13 MB
+9. Small. Final JAR includes everything (it self-contained) and it is only 12 MB
 
 To get the code:
 -------------------
