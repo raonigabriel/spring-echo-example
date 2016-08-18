@@ -1,0 +1,9 @@
+target/
+uploads/
+.settings/
+.mvn/
+.project
+.classpath
+.springBeans
+*.log
+*.sql
