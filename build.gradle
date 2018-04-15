@@ -16,7 +16,7 @@ buildscript {
 }
 
 task wrapper(type: Wrapper) {
-   gradleVersion = '2.10'
+   gradleVersion = '4.6'
 }
 
 apply plugin: 'java'
