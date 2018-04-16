@@ -41,7 +41,7 @@ public class SpringEchoApp {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SpringEchoApp.class, args);
-		LOG.info("Live and kicking!!");
+		LOG.info("Alive and kicking!!!");
 	}
 
 	@RequestMapping(value = "/**", consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
