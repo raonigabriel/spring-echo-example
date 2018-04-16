@@ -61,6 +61,7 @@ public class SpringEchoApp {
 		responseMap.put("parameters", request.getParameterMap());
 		responseMap.put("path", request.getServletPath());
 		responseMap.put("body", rawBody != null ? Base64.getEncoder().encodeToString(rawBody) : null);
+		LOG.info("REQUEST: " + request.getParameterMap());
 
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseMap);
 	}	
