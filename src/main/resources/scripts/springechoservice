@@ -25,6 +25,7 @@ USER=springecho
 GROUP=$USER
 
 JAVA=/usr/bin/java
+#JAVA=/usr/lib/jvm/java-8-openjdk-amd64-setcap/jre/bin/java
 JVM_ARGS="-Xms512m -Xmx768m"
 JAR_PATH=$WORKING_DIR/build/libs/spring-echo-example-1.0.0.jar
 JAVA_ARGS="$JVM_ARGS -jar $JAR_PATH --server.port=$SVCPORT"
