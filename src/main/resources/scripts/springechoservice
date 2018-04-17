@@ -14,6 +14,7 @@
 
 # CHANGE THIS FOR YOUR ENVIRONMENT!!!
 WORKING_DIR=/home/vagrant/spring-echo-example
+SVCPORT=8080
 
 # PATH should only include /usr/* if it runs after the mountnfs.sh script
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
@@ -26,7 +27,7 @@ GROUP=$USER
 JAVA=/usr/bin/java
 JVM_ARGS="-Xms512m -Xmx768m"
 JAR_PATH=$WORKING_DIR/build/libs/spring-echo-example-1.0.0.jar
-JAVA_ARGS="$JVM_ARGS -jar $JAR_PATH --server.port=8080"
+JAVA_ARGS="$JVM_ARGS -jar $JAR_PATH --server.port=$SVCPORT"
 
 PID_DIR="/var/run/$NAME"
 PID_FILE="$PID_DIR/$NAME.pid"
