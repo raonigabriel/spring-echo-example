@@ -1,0 +1,37 @@
+[Unit]
+Description=Spring Echo service
+After=syslog.target
+
+# CHANGE TO YOUR ENV !!!
+Environment=MYDIR=/home/vagrant/spring-echo-example SVCPORT=8080
+ConditionPathExists=${MYDIR}
+
+[Service]
+Type=simple
+User=springecho
+Group=springecho
+LimitNOFILE=1024
+
+Environment=SVCNAME=springechoservice
+
+Restart=on-failure
+RestartSec=10
+startLimitIntervalSec=60
+
+WorkingDirectory=${MYDIR}
+ExecStart=/usr/bin/java -jar ${MYDIR}/build/libs/spring-echo-example-1.0.0.jar --server.port=${SVCPORT} -Xms256m -Xmx768m
+
+# make sure log directory exists and owned by syslog
+PermissionsStartOnly=true
+ExecStartPre=/bin/mkdir -p /var/log/${SVCNAME}
+ExecStartPre=/bin/chown syslog:adm /var/log/${SVCNAME}
+ExecStartPre=/bin/chmod 755 /var/log/${SVCNAME}
+ExecStartPre=/usr/bin/touch /var/log/${SVCNAME}/${SVCNAME}.log
+ExecStartPre=/bin/chown syslog:adm /var/log/${SVCNAME}/${SVCNAME}.log
+ExecStartPre=/bin/chmod 755 /var/log/${SVCNAME}/${SVCNAME}.log
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=${SVCNAME}
+
+[Install]
+WantedBy=multi-user.target
