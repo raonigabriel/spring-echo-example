@@ -24,6 +24,8 @@ startLimitIntervalSec=60
 WorkingDirectory=${WORKING_DIR}
 ExecStart=/usr/bin/java -jar ${WORKING_DIR}/build/libs/spring-echo-example-1.0.0.jar --server.port=${SVCPORT} -Xms256m -Xmx768m
 
+#ExecStart=/usr/lib/jvm/java-8-openjdk-amd64-setcap/jre/bin/java -jar ${WORKING_DIR}/build/libs/spring-echo-example-1.0.0.jar --server.port=${SVCPORT} -Xms256m -Xmx768m
+
 # make sure log directory exists and owned by syslog
 PermissionsStartOnly=true
 ExecStartPre=/bin/mkdir -p /var/log/${SVCNAME}
