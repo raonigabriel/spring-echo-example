@@ -1,0 +1,43 @@
+[Unit]
+Description=Spring Echo service
+After=syslog.target
+
+# CHANGE TO YOUR ENV !!!
+Environment=WORKING_DIR=/home/vagrant/spring-echo-example
+ConditionPathExists=${WORKING_DIR}
+
+[Service]
+Type=simple
+User=springecho
+Group=springecho
+LimitNOFILE=1024
+
+# CHANGE TO YOUR ENV !!!
+Environment=WORKING_DIR=/home/vagrant/spring-echo-example
+Environment=SVCPORT=8080
+Environment=SVCNAME=springechoservice
+
+Restart=on-failure
+RestartSec=10
+startLimitIntervalSec=60
+
+WorkingDirectory=${WORKING_DIR}
+ExecStart=/usr/bin/java -jar ${WORKING_DIR}/build/libs/spring-echo-example-1.0.0.jar --server.port=${SVCPORT} -Xms256m -Xmx768m
+
+#ExecStart=/usr/lib/jvm/java-8-openjdk-amd64-setcap/jre/bin/java -jar ${WORKING_DIR}/build/libs/spring-echo-example-1.0.0.jar --server.port=${SVCPORT} -Xms256m -Xmx768m
+
+# make sure log directory exists and owned by syslog
+PermissionsStartOnly=true
+ExecStartPre=/bin/mkdir -p /var/log/${SVCNAME}
+ExecStartPre=/bin/chown syslog:adm /var/log/${SVCNAME}
+ExecStartPre=/bin/chmod 755 /var/log/${SVCNAME}
+ExecStartPre=/usr/bin/touch /var/log/${SVCNAME}/${SVCNAME}.log
+ExecStartPre=/bin/chown syslog:adm /var/log/${SVCNAME}/${SVCNAME}.log
+ExecStartPre=/bin/chmod 755 /var/log/${SVCNAME}/${SVCNAME}.log
+StandardOutput=syslog
+StandardError=syslog
+# cannot do var expansion
+SyslogIdentifier=springechoservice
+
+[Install]
+WantedBy=multi-user.target

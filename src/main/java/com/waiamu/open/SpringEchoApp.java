@@ -41,7 +41,7 @@ public class SpringEchoApp {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SpringEchoApp.class, args);
-		LOG.info("Live and kicking!!");
+		LOG.info("Alive and kicking!!!");
 	}
 
 	@RequestMapping(value = "/**", consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
@@ -61,6 +61,7 @@ public class SpringEchoApp {
 		responseMap.put("parameters", request.getParameterMap());
 		responseMap.put("path", request.getServletPath());
 		responseMap.put("body", rawBody != null ? Base64.getEncoder().encodeToString(rawBody) : null);
+		LOG.info("REQUEST: " + request.getParameterMap());
 
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseMap);
 	}	

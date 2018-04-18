@@ -1,0 +1,58 @@
+buildscript {
+    ext {
+        springBootVersion = '1.5.11.RELEASE'
+    }
+
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven { url "https://repo.spring.io/plugins-release" }
+    }
+
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath("org.springframework.boot:spring-boot-devtools:${springBootVersion}")
+    }
+}
+
+task wrapper(type: Wrapper) {
+   gradleVersion = '4.6'
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse-wtp'
+apply plugin: 'org.springframework.boot'
+
+version = '1.0.0'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+
+dependencies {
+    // Spring Boot, use Jetty instead of default Tomcat
+    // https://medium.com/code-your-life/use-jetty9-with-spring-boot-and-gradle-85a1127c919f 
+    compile ("org.springframework.boot:spring-boot-starter-web") {
+		exclude module: "spring-boot-starter-tomcat"
+	}
+	compile("org.springframework.boot:spring-boot-starter-jetty")
+    compile "org.springframework.boot:spring-boot-starter-test"
+
+    // Testing
+    testCompile "junit:junit"
+}
+
+jar {
+    baseName = "spring-echo-example"
+    version = version
+//    manifest {
+//    	attributes('Main-Class': 'com.waiamu.open.SpringEchoApp')
+//    }
+}
+
+
+
