@@ -26,7 +26,7 @@
 		<docker.registry>ghcr.io/</docker.registry>
 		<docker.project.id>raonigabriel/${project.artifactId}</docker.project.id>
 		<docker.image.tag>${project.version}</docker.image.tag>
-		<docker.image.name>${docker.registry}${docker.project.id}:${docker.image.tag}</docker.image.name>
+		<docker.image.name>${docker.registry}${docker.project.id}</docker.image.name>
 	</properties>
 
 	<dependencies>
@@ -97,6 +97,32 @@
 					</execution>
 				</executions>				
 			</plugin>
+
+			<!-- Skips the default execution of Maven install -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<version>3.0.0-M1</version>
+				<executions>
+					<execution>
+						<id>default-install</id>
+						<phase>none</phase>
+					</execution>
+				</executions>
+			</plugin>
+			
+			<!-- Skips the default execution of Maven deploy -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>3.0.0-M2</version>
+				<executions>
+					<execution>
+						<id>default-deploy</id>
+						<phase>none</phase>
+					</execution>
+				</executions>
+			</plugin>
 			
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -118,10 +144,10 @@
 							</arguments>
 						</configuration>
 					</execution>					
-					<!-- Builds the docker image (requires docker to be installed) -->
+					<!-- Builds the versioned docker image (requires docker to be installed) -->
 					<execution>
 						<phase>integration-test</phase>
-						<id>build-docker-image</id>
+						<id>build-versioned-image</id>
 						<goals>
 							<goal>exec</goal>
 						</goals>
@@ -134,14 +160,31 @@
 								<argument>--build-arg</argument>
 								<argument>JAR_FILE=${project.build.finalName}.jar</argument>
 								<argument>-t</argument>
-								<argument>${docker.image.name}</argument>
+								<argument>${docker.image.name}:${docker.image.tag}</argument>
 							</arguments>
 						</configuration>
 					</execution>
-					<!-- Pushes the docker image (requires previous docker login) -->
+					<!-- Tags the docker image as latest (requires docker to be installed) -->
+					<execution>
+						<phase>integration-test</phase>
+						<id>tag-latest-image</id>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<workingDirectory>${project.basedir}</workingDirectory>
+							<executable>docker</executable>
+							<arguments>
+								<argument>tag</argument>
+								<argument>${docker.image.name}:${docker.image.tag}</argument>
+								<argument>${docker.image.name}:latest</argument>
+							</arguments>
+						</configuration>
+					</execution>					
+					<!-- Pushes the versioned docker image (requires previous docker login) -->
 					<execution>
 						<phase>deploy</phase>
-						<id>push-docker-image</id>
+						<id>push-versioned-image</id>
 						<goals>
 							<goal>exec</goal>
 						</goals>
@@ -151,10 +194,27 @@
 							<arguments>
 								<argument>image</argument>
 								<argument>push</argument>
-								<argument>${docker.image.name}</argument>
+								<argument>${docker.image.name}:${docker.image.tag}</argument>
 							</arguments>
 						</configuration>
 					</execution>
+					<!-- Pushes the latest docker image (requires previous docker login) -->
+					<execution>
+						<phase>deploy</phase>
+						<id>push-latest-image</id>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<workingDirectory>${project.basedir}</workingDirectory>
+							<executable>docker</executable>
+							<arguments>
+								<argument>image</argument>
+								<argument>push</argument>
+								<argument>${docker.image.name}:latest</argument>
+							</arguments>
+						</configuration>
+					</execution>					
 				</executions>
 			</plugin>
 		</plugins>
