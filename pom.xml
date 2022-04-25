@@ -5,7 +5,7 @@
 
 	<groupId>com.waiamu.open</groupId>
 	<artifactId>spring-echo-example</artifactId>
-	<version>1.0.0</version>
+	<version>1.1.0</version>
 
 	<name>spring-echo-example</name>
 	<description>Spring Boot Echo Example</description>
@@ -22,7 +22,11 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
-		<springBootVersion>1.5.11.RELEASE</springBootVersion>
+		<spring.boot.version>2.6.7</spring.boot.version>
+		<docker.registry>ghcr.io/</docker.registry>
+		<docker.project.id>raonigabriel/${project.artifactId}</docker.project.id>
+		<docker.image.tag>${project.version}</docker.image.tag>
+		<docker.image.name>${docker.registry}${docker.project.id}:${docker.image.tag}</docker.image.name>
 	</properties>
 
 	<dependencies>
@@ -30,7 +34,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
-			<version>${springBootVersion}</version>
+			<version>${spring.boot.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.springframework.boot</groupId>
@@ -45,20 +49,20 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-jetty</artifactId>
-			<version>${springBootVersion}</version>
+			<version>${spring.boot.version}</version>
 		</dependency>
 		<!-- https://docs.spring.io/spring-boot/docs/current/reference/html/build-tool-plugins-maven-plugin.html -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<optional>true</optional>
-			<version>${springBootVersion}</version>
+			<version>${spring.boot.version}</version>
 		</dependency>
 		<!-- https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-testing.html -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
-			<version>${springBootVersion}</version>
+			<version>${spring.boot.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -66,24 +70,25 @@
 	
 	<build>
 		<plugins>
-			<!--  compilation options -->
+			<!--  Compilation options -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.5.1</version>
+				<version>3.10.1</version>
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
 					<compilerArgument>-Xlint:all</compilerArgument>
-					<showWarnings>false</showWarnings>
-					<showDeprecation>false</showDeprecation>
+					<showWarnings>true</showWarnings>
+					<showDeprecation>true</showDeprecation>
 				</configuration>
 			</plugin>
 		
-			<!-- packages into single jar -->
+			<!-- Packages into single jar -->
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>${spring.boot.version}</version>
 				<executions>
 					<execution>
 						<goals>
@@ -92,65 +97,68 @@
 					</execution>
 				</executions>				
 			</plugin>
+			
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>3.0.0</version>
+				<executions>
+					<!-- Lints the Dockerfile (requires hadolint to be installed) -->
+					<execution>
+						<phase>pre-integration-test</phase>
+						<id>lint-docker-file</id>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<workingDirectory>${project.basedir}</workingDirectory>
+							<executable>hadolint</executable>
+							<arguments>
+								<argument>Dockerfile</argument>
+							</arguments>
+						</configuration>
+					</execution>					
+					<!-- Builds the docker image (requires docker to be installed) -->
+					<execution>
+						<phase>integration-test</phase>
+						<id>build-docker-image</id>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<workingDirectory>${project.basedir}</workingDirectory>
+							<executable>docker</executable>
+							<arguments>
+								<argument>build</argument>
+								<argument>.</argument>
+								<argument>--build-arg</argument>
+								<argument>JAR_FILE=${project.build.finalName}.jar</argument>
+								<argument>-t</argument>
+								<argument>${docker.image.name}</argument>
+							</arguments>
+						</configuration>
+					</execution>
+					<!-- Pushes the docker image (requires previous docker login) -->
+					<execution>
+						<phase>deploy</phase>
+						<id>push-docker-image</id>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<workingDirectory>${project.basedir}</workingDirectory>
+							<executable>docker</executable>
+							<arguments>
+								<argument>image</argument>
+								<argument>push</argument>
+								<argument>${docker.image.name}</argument>
+							</arguments>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
-		
-		<!--  for eclipse  -->
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.apache.maven.plugins
-										</groupId>
-										<artifactId>
-											maven-antrun-plugin
-										</artifactId>
-										<versionRange>
-											[1.7,)
-										</versionRange>
-										<goals>
-											<goal>run</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.apache.maven.plugins
-										</groupId>
-										<artifactId>
-											maven-dependency-plugin
-										</artifactId>
-										<versionRange>
-											[2.5.1,)
-										</versionRange>
-										<goals>
-											<goal>
-												copy-dependencies
-											</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>	
 
+	</build>	
 
 </project>
